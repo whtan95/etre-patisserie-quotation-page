@@ -155,7 +155,7 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
           <p className="mt-1 text-xs text-muted-foreground">
             Export a PDF to share internally, or contact us directly if you have questions before submitting.
           </p>
-          <div className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+          <div className="mt-3 flex flex-col items-center justify-center gap-2 sm:flex-row">
             <button
               type="button"
               onClick={exportPdf}
