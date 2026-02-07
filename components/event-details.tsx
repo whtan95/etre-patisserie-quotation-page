@@ -29,8 +29,8 @@ export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
   return (
     <TooltipProvider>
       <div className="overflow-hidden rounded-xl border border-accent bg-card shadow-md">
-        <div className="border-b border-accent bg-accent px-4 py-2.5">
-          <h2 className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
+        <div className="border-b border-[#5D2B22] bg-[#5D2B22] px-4 py-2.5">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-white">
             <Calendar className="h-4 w-4" />
             Event Details
           </h2>
@@ -71,7 +71,7 @@ export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
                 Event Type
                 <Tooltip>
                   <TooltipTrigger type="button">
-                    <Info className="h-3 w-3 text-accent" />
+                    <Info className="h-3 w-3 text-white/80" />
                   </TooltipTrigger>
                   <TooltipContent>
                     <p className="text-xs">If unsure, choose &quot;Others&quot; and explain in notes.</p>

@@ -183,8 +183,8 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
 
   return (
     <div className="overflow-hidden rounded-xl border border-accent bg-card shadow-md">
-      <div className="border-b border-accent bg-accent px-4 py-2.5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
+      <div className="border-b border-[#5D2B22] bg-[#5D2B22] px-4 py-2.5">
+        <h2 className="flex items-center gap-2 text-sm font-bold text-white">
           <UtensilsCrossed className="h-4 w-4" />
           Branding & Menu Selection
         </h2>

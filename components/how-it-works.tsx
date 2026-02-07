@@ -3,8 +3,8 @@ import { ClipboardList, MessageSquareText, FileText } from "lucide-react"
 export function HowItWorks() {
   return (
     <div className="overflow-hidden rounded-2xl border-2 border-border bg-card shadow-xl">
-      <div className="border-b border-border bg-secondary px-6 py-4">
-        <h2 className="text-xl font-bold text-foreground">How It Works</h2>
+      <div className="border-b border-[#5D2B22] bg-[#5D2B22] px-6 py-4">
+        <h2 className="text-xl font-bold text-white">How It Works</h2>
       </div>
 
       <div className="p-6">
@@ -39,4 +39,3 @@ export function HowItWorks() {
     </div>
   )
 }
-

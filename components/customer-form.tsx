@@ -46,8 +46,8 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
 
   return (
     <div className="overflow-hidden rounded-xl border border-accent bg-card shadow-md">
-      <div className="border-b border-accent bg-accent px-4 py-2.5">
-        <h2 className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
+      <div className="border-b border-[#5D2B22] bg-[#5D2B22] px-4 py-2.5">
+        <h2 className="flex items-center gap-2 text-sm font-bold text-white">
           <HelpCircle className="h-4 w-4" />
           Contact Information
         </h2>
@@ -149,8 +149,35 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
           </div>
         </div>
 
+        {/* Quick actions */}
+        <div className="mt-6 rounded-lg border border-border bg-secondary/30 p-4 print:hidden">
+          <p className="text-sm font-semibold text-foreground">Quick actions</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Export a PDF to share internally, or contact us directly if you have questions before submitting.
+          </p>
+          <div className="mt-3 flex flex-col items-stretch gap-2 sm:flex-row sm:items-center">
+            <button
+              type="button"
+              onClick={exportPdf}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
+            >
+              <FileDown className="h-4 w-4" />
+              <span>Export as PDF</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={contactUs}
+              className="inline-flex items-center justify-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
+            >
+              <MessageCircle className="h-4 w-4" />
+              <span>Contact Us</span>
+            </button>
+          </div>
+        </div>
+
         {/* Request a Quote Button */}
-        <div className="mt-6 flex flex-col items-center justify-center gap-3 md:flex-row print:hidden">
+        <div className="mt-4 flex justify-center print:hidden">
           <button
             type="button"
             onClick={onSubmit}
@@ -158,24 +185,6 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
           >
             {isSubmitted ? <CheckCircle2 className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             <span>{isSubmitted ? "Request Sent" : "Request a Quote"}</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={exportPdf}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
-          >
-            <FileDown className="h-4 w-4" />
-            <span>Export as PDF</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={contactUs}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
-          >
-            <MessageCircle className="h-4 w-4" />
-            <span>Contact Us</span>
           </button>
         </div>
         <p className="mt-3 text-center text-[10px] text-muted-foreground">
