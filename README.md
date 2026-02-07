@@ -1,4 +1,4 @@
-# Event calculator
+# Être Patisserie – Quotation Request Page
 
 *Automatically synced with your [v0.app](https://v0.app) deployments*
 
@@ -7,14 +7,12 @@
 
 ## Overview
 
-This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).
-Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).
+This is a quotation request form for **Être Patisserie** (French pastries & desserts).
+Customers submit event details and preferences; submission does **not** confirm a booking.
 
 ## Deployment
 
-Your project is live at:
-
-**[https://vercel.com/conan-tans-projects/v0-event-calculator](https://vercel.com/conan-tans-projects/v0-event-calculator)**
+Deploy on your preferred platform (e.g. Vercel) as a Next.js app.
 
 ## Build your app
 

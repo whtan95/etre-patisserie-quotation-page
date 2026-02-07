@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Bot, Send, X, Sparkles, MessageCircle } from "lucide-react"
+import { Bot, Send, X, Sparkles } from "lucide-react"
 import { Input } from "@/components/ui/input"
 
 export function AIAssistant() {
@@ -10,7 +10,7 @@ export function AIAssistant() {
   const [messages, setMessages] = useState<{ role: "user" | "assistant"; content: string }[]>([
     {
       role: "assistant",
-      content: "Hello! I'm your Venus Excellent AI Assistant. How can I help you with your event planning today?"
+      content: "Hello! I’m the Être assistant. Share your event details and dessert preferences, and we’ll prepare a quotation."
     }
   ])
 
@@ -24,7 +24,8 @@ export function AIAssistant() {
     setTimeout(() => {
       setMessages(prev => [...prev, { 
         role: "assistant", 
-        content: "Thank you for your message! Our AI assistant is currently being set up. In the meantime, please use the WhatsApp button below to contact our team directly for assistance." 
+        content:
+          "Thank you! Our assistant is currently being set up. Please submit the quotation request form — we’ll reply within 24–48 hours." 
       }])
     }, 1000)
     
@@ -111,7 +112,7 @@ export function AIAssistant() {
           </div>
           <p className="mt-2 text-center text-xs text-muted-foreground flex items-center justify-center gap-1">
             <Sparkles className="h-3 w-3" />
-            Powered by Venus AI
+            Assistant (beta)
           </p>
         </div>
       </div>

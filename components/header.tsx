@@ -9,13 +9,12 @@ export function Header() {
             <Sparkles className="h-5 w-5 text-accent-foreground" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-background md:text-xl">Venus Excellent</h1>
-            <p className="text-xs text-background/80">Sdn Bhd</p>
+            <h1 className="text-lg font-bold text-background md:text-xl">Être Patisserie</h1>
+            <p className="text-xs text-background/80">Quotation Request</p>
           </div>
         </div>
         <div className="hidden text-right md:block">
-          <p className="text-sm font-medium text-background">Tent & Event Rentals</p>
-          <p className="text-xs text-background/80">Perak, Malaysia</p>
+          <p className="text-sm font-medium text-background">French Pastries & Desserts</p>
         </div>
       </div>
     </header>

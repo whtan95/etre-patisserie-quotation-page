@@ -8,8 +8,8 @@ const _geist = Geist({ subsets: ["latin"] });
 const _geistMono = Geist_Mono({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: 'Simple Calculator for Private Events | Venus Excellent Sdn Bhd',
-  description: 'Calculate your event rental costs for tents, tables, and equipment. Get instant quotes for weddings, parties, and corporate events in Perak, Malaysia.',
+  title: 'Custom Dessert Catering for Your Event | Être Patisserie',
+  description: 'Share your event details and dessert preferences. We’ll reply within 24–48 hours with a personalised quotation (no booking confirmation on submission).',
   generator: 'v0.app',
   icons: {
     icon: [

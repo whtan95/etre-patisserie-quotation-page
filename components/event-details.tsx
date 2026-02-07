@@ -2,7 +2,7 @@
 
 import React from "react"
 
-import type { EventData } from "@/app/page"
+import type { EventData, EventLocation, VenueType } from "@/lib/quote-types"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import {
@@ -12,43 +12,49 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip"
-import { MapPin, Calendar, Users, Building2, Home, Info, AlertTriangle } from "lucide-react"
+import { MapPin, Calendar, Users, Building2, Info } from "lucide-react"
 
 interface EventDetailsProps {
   eventData: EventData
   setEventData: React.Dispatch<React.SetStateAction<EventData>>
 }
 
-// Helper to check if a date is Sunday
-const isSunday = (dateString: string): boolean => {
-  if (!dateString) return false
-  const date = new Date(dateString)
-  return date.getDay() === 0
-}
-
 export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
   return (
     <TooltipProvider>
-      <div className="overflow-hidden rounded-2xl border-2 border-accent bg-card shadow-xl">
-        <div className="border-b border-accent bg-accent px-6 py-4">
-          <h2 className="flex items-center gap-2 text-xl font-bold text-accent-foreground">
-            <Calendar className="h-5 w-5" />
+      <div className="overflow-hidden rounded-xl border border-accent bg-card shadow-md">
+        <div className="border-b border-accent bg-accent px-4 py-2.5">
+          <h2 className="flex items-center gap-2 text-sm font-bold text-accent-foreground">
+            <Calendar className="h-4 w-4" />
             Event Details
           </h2>
         </div>
 
-        <div className="p-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="event-date" className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Calendar className="h-4 w-4" />
+        <div className="p-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            <div className="space-y-1.5 md:col-span-2">
+              <Label htmlFor="event-name" className="text-xs font-semibold text-foreground">
+                Event Name
+              </Label>
+              <Input
+                id="event-name"
+                type="text"
+                value={eventData.eventName}
+                onChange={(e) => setEventData((prev) => ({ ...prev, eventName: e.target.value }))}
+                placeholder="e.g., Company Anniversary / Birthday Party"
+                className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <Label htmlFor="event-date" className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                <Calendar className="h-3 w-3" />
                 Event Date
               </Label>
               <Input
@@ -56,19 +62,19 @@ export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
                 type="date"
                 value={eventData.eventDate}
                 onChange={(e) => setEventData((prev) => ({ ...prev, eventDate: e.target.value }))}
-                className="border-2 border-border bg-background transition-colors focus:border-accent"
+                className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
               />
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="event-type" className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <div className="space-y-1.5">
+              <Label htmlFor="event-type" className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
                 Event Type
                 <Tooltip>
-                  <TooltipTrigger>
-                    <Info className="h-4 w-4 text-accent" />
+                  <TooltipTrigger type="button">
+                    <Info className="h-3 w-3 text-accent" />
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p className="text-sm font-medium text-destructive">We do not offer funeral services.</p>
+                    <p className="text-xs">If unsure, choose &quot;Others&quot; and explain in notes.</p>
                   </TooltipContent>
                 </Tooltip>
               </Label>
@@ -76,60 +82,52 @@ export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
                 value={eventData.eventType}
                 onValueChange={(value) => setEventData((prev) => ({ ...prev, eventType: value }))}
               >
-                <SelectTrigger className="border-2 border-border bg-background transition-colors focus:border-accent">
+                <SelectTrigger className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent">
                   <SelectValue placeholder="Select event type" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="Wedding">Wedding</SelectItem>
-                  <SelectItem value="Party">Party</SelectItem>
-                  <SelectItem value="Corporate">Corporate</SelectItem>
-                  <SelectItem value="Religious Ceremony">Religious Ceremony</SelectItem>
-                  <SelectItem value="Festive">Festive</SelectItem>
+                  <SelectItem value="Private Event" className="text-xs">Private Event</SelectItem>
+                  <SelectItem value="Wedding" className="text-xs">Wedding</SelectItem>
+                  <SelectItem value="Corporate" className="text-xs">Corporate</SelectItem>
+                  <SelectItem value="Festive" className="text-xs">Festive</SelectItem>
+                  <SelectItem value="Take Out" className="text-xs">Take Out</SelectItem>
+                  <SelectItem value="Others" className="text-xs">Others</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="setup-date" className="text-sm font-semibold text-foreground">
-                Preferred Setup Date
-              </Label>
-              <Input
-                id="setup-date"
-                type="date"
-                value={eventData.setupDate}
-                onChange={(e) => setEventData((prev) => ({ ...prev, setupDate: e.target.value }))}
-                className="border-2 border-border bg-background transition-colors focus:border-accent"
-              />
-              {isSunday(eventData.setupDate) && (
-                <p className="flex items-center gap-1 text-xs font-semibold text-red-600">
-                  <AlertTriangle className="h-3 w-3" />
-                  Additional OT fees charges (RM300) - see below
-                </p>
-              )}
-            </div>
+            {eventData.eventType === "Take Out" && (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="takeout-setup" className="text-xs font-semibold text-foreground">
+                    Take Out: Preferred setup date
+                  </Label>
+                  <Input
+                    id="takeout-setup"
+                    type="date"
+                    value={eventData.takeOutSetupDate}
+                    onChange={(e) => setEventData((prev) => ({ ...prev, takeOutSetupDate: e.target.value }))}
+                    className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label htmlFor="takeout-dismantle" className="text-xs font-semibold text-foreground">
+                    Take Out: Preferred dismantle date
+                  </Label>
+                  <Input
+                    id="takeout-dismantle"
+                    type="date"
+                    value={eventData.takeOutDismantleDate}
+                    onChange={(e) => setEventData((prev) => ({ ...prev, takeOutDismantleDate: e.target.value }))}
+                    className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+                  />
+                </div>
+              </>
+            )}
 
-            <div className="space-y-2">
-              <Label htmlFor="dismantle-date" className="text-sm font-semibold text-foreground">
-                Preferred Dismantle Date
-              </Label>
-              <Input
-                id="dismantle-date"
-                type="date"
-                value={eventData.dismantleDate}
-                onChange={(e) => setEventData((prev) => ({ ...prev, dismantleDate: e.target.value }))}
-                className="border-2 border-border bg-background transition-colors focus:border-accent"
-              />
-              {isSunday(eventData.dismantleDate) && (
-                <p className="flex items-center gap-1 text-xs font-semibold text-red-600">
-                  <AlertTriangle className="h-3 w-3" />
-                  Additional OT fees charges (RM300) - see below
-                </p>
-              )}
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="guests" className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Users className="h-4 w-4" />
+            <div className="space-y-1.5">
+              <Label htmlFor="guests" className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                <Users className="h-3 w-3" />
                 Estimated Guests Attending
               </Label>
               <Input
@@ -145,80 +143,103 @@ export function EventDetails({ eventData, setEventData }: EventDetailsProps) {
                   }))
                 }
                 placeholder="Enter number of guests"
-                className="border-2 border-border bg-background transition-colors focus:border-accent"
+                className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
               />
             </div>
 
-            {/* Area Type Selection - Public or Private */}
-            <div className="space-y-2">
-              <Label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <Building2 className="h-4 w-4" />
-                Area Type
+            <div className="space-y-1.5">
+              <Label className="text-xs font-semibold text-foreground">
+                Budget Per Person (RM)
               </Label>
-              <RadioGroup
-                value={eventData.areaType}
-                onValueChange={(value: "private" | "public") => setEventData((prev) => ({ ...prev, areaType: value }))}
-                className="flex gap-4"
-              >
-                <div className="flex flex-1 items-center space-x-3 rounded-lg border-2 border-border p-4 transition-all hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-                  <RadioGroupItem value="private" id="private" />
-                  <Label htmlFor="private" className="flex cursor-pointer items-center gap-2 text-foreground">
-                    <Home className="h-4 w-4" />
-                    Private Area
+              <div className="grid grid-cols-2 gap-2">
+                <div className="space-y-1">
+                  <Label htmlFor="budget-from" className="text-[10px] text-muted-foreground">
+                    From
                   </Label>
+                  <Input
+                    id="budget-from"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={eventData.budgetPerPersonFromRm}
+                    onChange={(e) => setEventData((prev) => ({ ...prev, budgetPerPersonFromRm: e.target.value }))}
+                    placeholder="30"
+                    className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+                  />
                 </div>
-                <div className="flex flex-1 items-center space-x-3 rounded-lg border-2 border-border p-4 transition-all hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-                  <RadioGroupItem value="public" id="public" />
-                  <Label htmlFor="public" className="flex cursor-pointer items-center gap-2 text-foreground">
-                    <Building2 className="h-4 w-4" />
-                    Public Area
+                <div className="space-y-1">
+                  <Label htmlFor="budget-to" className="text-[10px] text-muted-foreground">
+                    To
                   </Label>
+                  <Input
+                    id="budget-to"
+                    type="number"
+                    inputMode="numeric"
+                    min="0"
+                    value={eventData.budgetPerPersonToRm}
+                    onChange={(e) => setEventData((prev) => ({ ...prev, budgetPerPersonToRm: e.target.value }))}
+                    placeholder="60"
+                    className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+                  />
                 </div>
-              </RadioGroup>
-              {eventData.areaType === "public" && (
-                <p className="mt-2 rounded-lg bg-accent/10 p-3 text-sm font-medium text-foreground">
-                  Public area requires MBI Permit (RM20/day), MBI Runner Fee (RM100), and parking fees
-                </p>
-              )}
+              </div>
             </div>
 
-            <div className="space-y-2 md:col-span-2">
-              <Label className="flex items-center gap-2 text-sm font-semibold text-foreground">
-                <MapPin className="h-4 w-4" />
-                Location Area
+            <div className="space-y-1.5 md:col-span-2">
+              <Label className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                <Building2 className="h-3 w-3" />
+                Event Location
               </Label>
-              <RadioGroup
-                value={eventData.areaSelection}
-                onValueChange={(value) => setEventData((prev) => ({ ...prev, areaSelection: value }))}
-                className="flex flex-wrap gap-3"
+              <Select
+                value={eventData.eventLocation}
+                onValueChange={(value) => setEventData((prev) => ({ ...prev, eventLocation: value as EventLocation }))}
               >
-                <div className="flex items-center space-x-2 rounded-lg border-2 border-border px-4 py-3 transition-all hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-                  <RadioGroupItem value="within-ipoh" id="within-ipoh" />
-                  <Label htmlFor="within-ipoh" className="cursor-pointer text-foreground">
-                    Within Ipoh Area
-                  </Label>
-                </div>
-                <div className="flex flex-col">
-                  <div className="flex items-center space-x-2 rounded-lg border-2 border-border px-4 py-3 transition-all hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-                    <RadioGroupItem value="within-perak" id="within-perak" />
-                    <Label htmlFor="within-perak" className="cursor-pointer text-foreground">
-                      Within Perak Area
-                    </Label>
-                  </div>
-                  {eventData.areaSelection === "within-perak" && (
-                    <p className="mt-1 pl-2 text-xs text-muted-foreground italic">
-                      (Example: Teluk Intan, Manjung, Kampar, Batu Gajah)
-                    </p>
-                  )}
-                </div>
-                <div className="flex items-center space-x-2 rounded-lg border-2 border-border px-4 py-3 transition-all hover:border-accent has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-                  <RadioGroupItem value="outside-perak" id="outside-perak" />
-                  <Label htmlFor="outside-perak" className="cursor-pointer text-foreground">
-                    Outside Perak Area
-                  </Label>
-                </div>
-              </RadioGroup>
+                <SelectTrigger className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent">
+                  <SelectValue placeholder="Select location" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="etre-cafe-kl" className="text-xs">Être Cafe KL</SelectItem>
+                  <SelectItem value="etre-cafe-ipoh" className="text-xs">Être Cafe Ipoh</SelectItem>
+                  <SelectItem value="others" className="text-xs">Others</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
+
+            {eventData.eventLocation === "others" && (
+              <>
+                <div className="space-y-1.5">
+                  <Label htmlFor="other-area" className="flex items-center gap-1.5 text-xs font-semibold text-foreground">
+                    <MapPin className="h-3 w-3" />
+                    Others Location / Venue Name
+                  </Label>
+                  <Input
+                    id="other-area"
+                    type="text"
+                    value={eventData.otherAreaName}
+                    onChange={(e) => setEventData((prev) => ({ ...prev, otherAreaName: e.target.value }))}
+                    placeholder="e.g., Hotel ballroom / Office / Home"
+                    className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent"
+                  />
+                </div>
+                <div className="space-y-1.5">
+                  <Label className="text-xs font-semibold text-foreground">
+                    Venue Type
+                  </Label>
+                  <Select
+                    value={eventData.otherVenueType}
+                    onValueChange={(value) => setEventData((prev) => ({ ...prev, otherVenueType: value as VenueType }))}
+                  >
+                    <SelectTrigger className="h-8 border border-border bg-background text-xs transition-colors focus:border-accent">
+                      <SelectValue placeholder="Select venue type" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="indoor" className="text-xs">Indoor</SelectItem>
+                      <SelectItem value="outdoor" className="text-xs">Outdoor</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>
