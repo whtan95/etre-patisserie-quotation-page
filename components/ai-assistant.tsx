@@ -37,7 +37,7 @@ export function AIAssistant() {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl ${isOpen ? "scale-0" : "scale-100"}`}
+        className={`fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-all hover:scale-110 hover:shadow-xl print:hidden ${isOpen ? "scale-0" : "scale-100"}`}
       >
         <Bot className="h-7 w-7" />
         <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-accent text-xs font-bold text-accent-foreground">
@@ -47,7 +47,7 @@ export function AIAssistant() {
 
       {/* Chat Window */}
       <div
-        className={`fixed bottom-6 right-6 z-50 w-80 overflow-hidden rounded-2xl border-2 border-primary bg-card shadow-2xl transition-all duration-300 md:w-96 ${
+        className={`fixed bottom-6 right-6 z-50 w-80 overflow-hidden rounded-2xl border-2 border-primary bg-card shadow-2xl transition-all duration-300 md:w-96 print:hidden ${
           isOpen ? "scale-100 opacity-100" : "scale-95 opacity-0 pointer-events-none"
         }`}
       >

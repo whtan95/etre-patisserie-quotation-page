@@ -4,7 +4,6 @@ import React, { useMemo, useState } from "react"
 
 import type {
   BrandingData,
-  BrandingRequirementType,
   DessertCategory,
   MenuSelectionData,
   CustomisationLevel,
@@ -60,42 +59,53 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
     return result
   }, [menu.itemQuantities])
 
-  const setBrandingRequirement = (value: BrandingRequirementType) => {
-    setBranding((prev) => {
-      if (value === prev.requirement) return prev
-      if (value === "none") {
-        return {
-          ...prev,
-          requirement: "none",
-          logoOnDessert: false,
-          logoOnPackaging: false,
-          logoOnOthers: false,
-          logoOnOthersText: "",
-          colourOnDessert: false,
-          colourOnPackaging: false,
-          colourOnOthers: false,
-          colourOnOthersText: "",
-        }
-      }
-      if (value === "brand-logo") {
-        return {
-          ...prev,
-          requirement: "brand-logo",
-          colourOnDessert: false,
-          colourOnPackaging: false,
-          colourOnOthers: false,
-          colourOnOthersText: "",
-        }
-      }
-      return {
-        ...prev,
-        requirement: "brand-colour",
-        logoOnDessert: false,
-        logoOnPackaging: false,
-        logoOnOthers: false,
-        logoOnOthersText: "",
-      }
-    })
+  const noBrandingRequirement = !branding.includeBrandLogo && !branding.matchBrandColours
+
+  const setNoBrandingRequirement = (checked: boolean) => {
+    if (!checked) return
+    setBranding((prev) => ({
+      ...prev,
+      includeBrandLogo: false,
+      matchBrandColours: false,
+      logoOnDessert: false,
+      logoOnPackaging: false,
+      logoOnOthers: false,
+      logoOnOthersText: "",
+      colourOnDessert: false,
+      colourOnPackaging: false,
+      colourOnOthers: false,
+      colourOnOthersText: "",
+    }))
+  }
+
+  const setIncludeBrandLogo = (checked: boolean) => {
+    setBranding((prev) => ({
+      ...prev,
+      includeBrandLogo: checked,
+      ...(checked
+        ? {}
+        : {
+            logoOnDessert: false,
+            logoOnPackaging: false,
+            logoOnOthers: false,
+            logoOnOthersText: "",
+          }),
+    }))
+  }
+
+  const setMatchBrandColours = (checked: boolean) => {
+    setBranding((prev) => ({
+      ...prev,
+      matchBrandColours: checked,
+      ...(checked
+        ? {}
+        : {
+            colourOnDessert: false,
+            colourOnPackaging: false,
+            colourOnOthers: false,
+            colourOnOthersText: "",
+          }),
+    }))
   }
 
   const handleReferenceUpload: React.ChangeEventHandler<HTMLInputElement> = async (e) => {
@@ -185,112 +195,120 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
         <div className="space-y-3">
           <h3 className="text-xs font-bold text-foreground">Branding Requirement</h3>
 
-          <RadioGroup
-            value={branding.requirement}
-            onValueChange={(value) => setBrandingRequirement(value as BrandingRequirementType)}
-            className="grid gap-1.5"
-          >
-            <div className="flex items-start gap-2 rounded-md border border-border p-2 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-              <RadioGroupItem value="none" id="branding-none" className="mt-0.5" />
-              <Label htmlFor="branding-none" className="cursor-pointer text-xs text-foreground">
-                No branding requirement
-              </Label>
+          <div className="grid gap-2">
+            <div className="rounded-md border border-border p-2">
+              <label className="flex items-start gap-2 text-xs text-foreground">
+                <Checkbox
+                  checked={noBrandingRequirement}
+                  onCheckedChange={(v) => setNoBrandingRequirement(Boolean(v))}
+                  className="mt-0.5 h-3.5 w-3.5"
+                />
+                <span className="cursor-pointer">No branding requirement</span>
+              </label>
             </div>
 
-            <div className="flex items-start gap-2 rounded-md border border-border p-2 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-              <RadioGroupItem value="brand-logo" id="branding-logo" className="mt-0.5" />
-              <Label htmlFor="branding-logo" className="cursor-pointer text-xs text-foreground">
-                Include brand logo
-              </Label>
+            <div className="space-y-2 rounded-md border border-border p-2 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
+              <label className="flex items-start gap-2 text-xs text-foreground">
+                <Checkbox
+                  checked={branding.includeBrandLogo}
+                  onCheckedChange={(v) => setIncludeBrandLogo(Boolean(v))}
+                  className="mt-0.5 h-3.5 w-3.5"
+                />
+                <span className="cursor-pointer">Include brand logo</span>
+              </label>
+
+              {branding.includeBrandLogo && (
+                <div className="rounded-md border border-border bg-background p-3">
+                  <p className="text-xs font-semibold text-foreground">Logo placement</p>
+                  <div className="mt-2 grid gap-1.5 md:grid-cols-2">
+                    <label className="flex items-center gap-2 text-xs text-foreground">
+                      <Checkbox
+                        checked={branding.logoOnDessert}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnDessert: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>dessert</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-foreground">
+                      <Checkbox
+                        checked={branding.logoOnPackaging}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnPackaging: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>customise packaging</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-foreground md:col-span-2">
+                      <Checkbox
+                        checked={branding.logoOnOthers}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnOthers: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>others, please specify</span>
+                    </label>
+                    {branding.logoOnOthers && (
+                      <Input
+                        value={branding.logoOnOthersText}
+                        onChange={(e) => setBranding((p) => ({ ...p, logoOnOthersText: e.target.value }))}
+                        placeholder="Describe other logo requirement"
+                        className="h-7 border border-border bg-background text-xs transition-colors focus:border-accent md:col-span-2"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
-            <div className="flex items-start gap-2 rounded-md border border-border p-2 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
-              <RadioGroupItem value="brand-colour" id="branding-colour" className="mt-0.5" />
-              <Label htmlFor="branding-colour" className="cursor-pointer text-xs text-foreground">
-                Match brand colours
-              </Label>
-            </div>
-          </RadioGroup>
+            <div className="space-y-2 rounded-md border border-border p-2 has-[:checked]:border-accent has-[:checked]:bg-accent/5">
+              <label className="flex items-start gap-2 text-xs text-foreground">
+                <Checkbox
+                  checked={branding.matchBrandColours}
+                  onCheckedChange={(v) => setMatchBrandColours(Boolean(v))}
+                  className="mt-0.5 h-3.5 w-3.5"
+                />
+                <span className="cursor-pointer">Match brand colours</span>
+              </label>
 
-          {branding.requirement === "brand-logo" && (
-            <div className="rounded-md border border-border bg-background p-3">
-              <p className="text-xs font-semibold text-foreground">Logo placement</p>
-              <div className="mt-2 grid gap-1.5 md:grid-cols-2">
-                <label className="flex items-center gap-2 text-xs text-foreground">
-                  <Checkbox
-                    checked={branding.logoOnDessert}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnDessert: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>dessert</span>
-                </label>
-                <label className="flex items-center gap-2 text-xs text-foreground">
-                  <Checkbox
-                    checked={branding.logoOnPackaging}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnPackaging: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>customise packaging</span>
-                </label>
-                <label className="flex items-center gap-2 text-xs text-foreground md:col-span-2">
-                  <Checkbox
-                    checked={branding.logoOnOthers}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, logoOnOthers: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>others, please specify</span>
-                </label>
-                {branding.logoOnOthers && (
-                  <Input
-                    value={branding.logoOnOthersText}
-                    onChange={(e) => setBranding((p) => ({ ...p, logoOnOthersText: e.target.value }))}
-                    placeholder="Describe other logo requirement"
-                    className="h-7 border border-border bg-background text-xs transition-colors focus:border-accent md:col-span-2"
-                  />
-                )}
-              </div>
+              {branding.matchBrandColours && (
+                <div className="rounded-md border border-border bg-background p-3">
+                  <p className="text-xs font-semibold text-foreground">Colour matching</p>
+                  <div className="mt-2 grid gap-1.5 md:grid-cols-2">
+                    <label className="flex items-center gap-2 text-xs text-foreground">
+                      <Checkbox
+                        checked={branding.colourOnDessert}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnDessert: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>dessert</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-foreground">
+                      <Checkbox
+                        checked={branding.colourOnPackaging}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnPackaging: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>customise packaging</span>
+                    </label>
+                    <label className="flex items-center gap-2 text-xs text-foreground md:col-span-2">
+                      <Checkbox
+                        checked={branding.colourOnOthers}
+                        onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnOthers: Boolean(v) }))}
+                        className="h-3.5 w-3.5"
+                      />
+                      <span>others, please specify</span>
+                    </label>
+                    {branding.colourOnOthers && (
+                      <Input
+                        value={branding.colourOnOthersText}
+                        onChange={(e) => setBranding((p) => ({ ...p, colourOnOthersText: e.target.value }))}
+                        placeholder="Describe other colour matching requirement"
+                        className="h-7 border border-border bg-background text-xs transition-colors focus:border-accent md:col-span-2"
+                      />
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
-          )}
-
-          {branding.requirement === "brand-colour" && (
-            <div className="rounded-md border border-border bg-background p-3">
-              <p className="text-xs font-semibold text-foreground">Colour matching</p>
-              <div className="mt-2 grid gap-1.5 md:grid-cols-2">
-                <label className="flex items-center gap-2 text-xs text-foreground">
-                  <Checkbox
-                    checked={branding.colourOnDessert}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnDessert: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>dessert</span>
-                </label>
-                <label className="flex items-center gap-2 text-xs text-foreground">
-                  <Checkbox
-                    checked={branding.colourOnPackaging}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnPackaging: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>customise packaging</span>
-                </label>
-                <label className="flex items-center gap-2 text-xs text-foreground md:col-span-2">
-                  <Checkbox
-                    checked={branding.colourOnOthers}
-                    onCheckedChange={(v) => setBranding((p) => ({ ...p, colourOnOthers: Boolean(v) }))}
-                    className="h-3.5 w-3.5"
-                  />
-                  <span>others, please specify</span>
-                </label>
-                {branding.colourOnOthers && (
-                  <Input
-                    value={branding.colourOnOthersText}
-                    onChange={(e) => setBranding((p) => ({ ...p, colourOnOthersText: e.target.value }))}
-                    placeholder="Describe other colour matching requirement"
-                    className="h-7 border border-border bg-background text-xs transition-colors focus:border-accent md:col-span-2"
-                  />
-                )}
-              </div>
-            </div>
-          )}
+          </div>
         </div>
 
         {/* Preferred menu selection */}
@@ -547,4 +565,3 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
     </div>
   )
 }
-

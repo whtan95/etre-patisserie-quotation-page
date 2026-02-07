@@ -6,7 +6,7 @@ import type { CustomerData } from "@/lib/quote-types"
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { User, Phone, Mail, MapPin, FileText, HelpCircle, Send, CheckCircle2 } from "lucide-react"
+import { User, Phone, Mail, MapPin, FileText, HelpCircle, Send, CheckCircle2, FileDown, MessageCircle } from "lucide-react"
 
 interface CustomerFormProps {
   customerData: CustomerData
@@ -16,6 +16,34 @@ interface CustomerFormProps {
 }
 
 export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmitted }: CustomerFormProps) {
+  const exportPdf = () => {
+    window.print()
+  }
+
+  const contactUs = () => {
+    const contactEmail = process.env.NEXT_PUBLIC_CONTACT_EMAIL
+    const whatsAppNumber = process.env.NEXT_PUBLIC_CONTACT_WHATSAPP_NUMBER
+
+    const subject = encodeURIComponent("Être Patisserie – quotation enquiry")
+    const body = encodeURIComponent(
+      `Hi Être Patisserie,\n\nI would like to enquire about a quotation.\n\nName: ${customerData.name || "-"}\nCompany: ${customerData.companyName || "-"}\nPhone: ${customerData.phone || "-"}\n\nThank you.`
+    )
+
+    if (typeof whatsAppNumber === "string" && whatsAppNumber.trim()) {
+      const digits = whatsAppNumber.replace(/[^\d]/g, "")
+      const url = `https://wa.me/${digits}?text=${body}`
+      window.open(url, "_blank", "noopener,noreferrer")
+      return
+    }
+
+    if (typeof contactEmail === "string" && contactEmail.trim()) {
+      window.location.href = `mailto:${contactEmail}?subject=${subject}&body=${body}`
+      return
+    }
+
+    alert("Contact details are not configured yet. Please set NEXT_PUBLIC_CONTACT_EMAIL or NEXT_PUBLIC_CONTACT_WHATSAPP_NUMBER in Vercel.")
+  }
+
   return (
     <div className="overflow-hidden rounded-xl border border-accent bg-card shadow-md">
       <div className="border-b border-accent bg-accent px-4 py-2.5">
@@ -122,7 +150,7 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
         </div>
 
         {/* Request a Quote Button */}
-        <div className="mt-6 flex justify-center">
+        <div className="mt-6 flex flex-col items-center justify-center gap-3 md:flex-row print:hidden">
           <button
             type="button"
             onClick={onSubmit}
@@ -130,6 +158,24 @@ export function CustomerForm({ customerData, setCustomerData, onSubmit, isSubmit
           >
             {isSubmitted ? <CheckCircle2 className="h-4 w-4" /> : <Send className="h-4 w-4" />}
             <span>{isSubmitted ? "Request Sent" : "Request a Quote"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={exportPdf}
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
+          >
+            <FileDown className="h-4 w-4" />
+            <span>Export as PDF</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={contactUs}
+            className="inline-flex items-center gap-2 rounded-lg border border-border bg-background px-5 py-3 text-sm font-semibold text-foreground shadow-sm transition-colors hover:bg-secondary"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>Contact Us</span>
           </button>
         </div>
         <p className="mt-3 text-center text-[10px] text-muted-foreground">

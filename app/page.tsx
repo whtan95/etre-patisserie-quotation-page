@@ -28,7 +28,8 @@ const emptyRequest: QuoteRequestData = {
     otherVenueType: "",
   },
   branding: {
-    requirement: "none",
+    includeBrandLogo: false,
+    matchBrandColours: false,
     logoOnDessert: false,
     logoOnPackaging: false,
     logoOnOthers: false,
@@ -86,9 +87,24 @@ export default function QuoteRequestPage() {
     if (saved) {
       try {
         const parsed = JSON.parse(saved) as Partial<QuoteRequestData>
+        const brandingRaw = { ...emptyRequest.branding, ...(parsed.branding ?? {}) } as any
+        // Backward-compat: older saves used `branding.requirement` ("none" | "brand-logo" | "brand-colour").
+        if (typeof brandingRaw.requirement === "string") {
+          if (brandingRaw.requirement === "brand-logo") {
+            brandingRaw.includeBrandLogo = true
+            brandingRaw.matchBrandColours = false
+          } else if (brandingRaw.requirement === "brand-colour") {
+            brandingRaw.includeBrandLogo = false
+            brandingRaw.matchBrandColours = true
+          } else {
+            brandingRaw.includeBrandLogo = false
+            brandingRaw.matchBrandColours = false
+          }
+          delete brandingRaw.requirement
+        }
         setRequest({
           event: { ...emptyRequest.event, ...(parsed.event ?? {}) },
-          branding: { ...emptyRequest.branding, ...(parsed.branding ?? {}) },
+          branding: brandingRaw,
           menu: { ...emptyRequest.menu, ...(parsed.menu ?? {}) },
           customer: { ...emptyRequest.customer, ...(parsed.customer ?? {}) },
         })

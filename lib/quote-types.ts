@@ -1,8 +1,6 @@
 export type EventLocation = "etre-cafe-kl" | "etre-cafe-ipoh" | "others" | ""
 export type VenueType = "indoor" | "outdoor" | ""
 
-export type BrandingRequirementType = "none" | "brand-logo" | "brand-colour"
-
 export type DessertCategory = "savoury" | "viennoiserie" | "tart" | "gateaux"
 export type DessertSize = "normal" | "mini" | ""
 
@@ -30,15 +28,16 @@ export interface EventData {
 }
 
 export interface BrandingData {
-  requirement: BrandingRequirementType
+  includeBrandLogo: boolean
+  matchBrandColours: boolean
 
-  // For "brand-logo"
+  // For includeBrandLogo
   logoOnDessert: boolean
   logoOnPackaging: boolean
   logoOnOthers: boolean
   logoOnOthersText: string
 
-  // For "brand-colour"
+  // For matchBrandColours
   colourOnDessert: boolean
   colourOnPackaging: boolean
   colourOnOthers: boolean
