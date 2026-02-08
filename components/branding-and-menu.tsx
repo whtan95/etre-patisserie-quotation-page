@@ -59,6 +59,8 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
     return result
   }, [menu.itemQuantities])
 
+  const totalPastriesAndDesserts = categories.reduce((sum, c) => sum + (selectedCountByCategory[c.id] ?? 0), 0)
+
   const noBrandingRequirement = !branding.includeBrandLogo && !branding.matchBrandColours
 
   const setNoBrandingRequirement = (checked: boolean) => {
@@ -479,11 +481,21 @@ export function BrandingAndMenu({ branding, setBranding, menu, setMenu }: Brandi
                             </div>
                           )
                         })}
+
+                        <div className="mt-1 flex items-center justify-between rounded-md border border-border bg-secondary/40 px-2 py-1">
+                          <p className="text-[10px] font-semibold text-muted-foreground">Total {c.title}:</p>
+                          <p className="text-xs font-semibold tabular-nums text-foreground">{selectedCount}</p>
+                        </div>
                       </div>
                     )}
                   </div>
                 )
               })}
+            </div>
+
+            <div className="flex items-center justify-start gap-2 text-xs">
+              <span className="text-muted-foreground">Total Pastries & Desserts:</span>
+              <span className="font-semibold tabular-nums text-foreground">{totalPastriesAndDesserts}</span>
             </div>
           </div>
 
