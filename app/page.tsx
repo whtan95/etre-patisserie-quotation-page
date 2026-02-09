@@ -12,12 +12,14 @@ import { AIAssistant } from "@/components/ai-assistant"
 import type { EventData, BrandingData, MenuSelectionData, CustomerData, QuoteRequestData } from "@/lib/quote-types"
 
 const STORAGE_KEY = "etre_quoteRequest_v2"
+const MENU_ITEM_PIECES_PER_UNIT = 30
 
 const emptyRequest: QuoteRequestData = {
   event: {
     eventName: "",
     eventDate: "",
     eventType: "",
+    otherEventType: "",
     estimatedGuests: 0,
     takeOutSetupDate: "",
     takeOutDismantleDate: "",
@@ -42,8 +44,15 @@ const emptyRequest: QuoteRequestData = {
   menu: {
     customisationLevel: "",
     customisationNotes: "",
-    referenceImageName: "",
-    referenceImageDataUrl: "",
+    referenceImage1Name: "",
+    referenceImage1DataUrl: "",
+    referenceImage2Name: "",
+    referenceImage2DataUrl: "",
+    preferredDesignStyle: "",
+    colourDirection: "",
+    colourDirectionClientSpecifiedText: "",
+    preferredFlavour: "",
+    preferredFlavourClientSpecifiedText: "",
     categories: [],
     itemQuantities: {},
     dessertSize: "",
@@ -65,6 +74,14 @@ export default function QuoteRequestPage() {
   const [request, setRequest] = useState<QuoteRequestData>(emptyRequest)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+
+  const submitDisabledReason = useMemo(() => {
+    if (request.menu.customisationLevel !== "full") return ""
+    if (!request.menu.referenceImage1DataUrl || !request.menu.referenceImage2DataUrl) {
+      return "Fully customise requires 2 reference photos (Step 1)."
+    }
+    return ""
+  }, [request.menu.customisationLevel, request.menu.referenceImage1DataUrl, request.menu.referenceImage2DataUrl])
 
   const setEventData: Dispatch<SetStateAction<EventData>> = (updater) => {
     setRequest((prev) => ({ ...prev, event: typeof updater === "function" ? updater(prev.event) : updater }))
@@ -102,10 +119,55 @@ export default function QuoteRequestPage() {
           }
           delete brandingRaw.requirement
         }
+
+        const menuRaw = { ...emptyRequest.menu, ...(parsed.menu ?? {}) } as any
+        // Backward-compat: older saves stored a single reference image fields (referenceImageName/referenceImageDataUrl).
+        if (typeof menuRaw.referenceImageDataUrl === "string" && menuRaw.referenceImageDataUrl.trim()) {
+          menuRaw.referenceImage1DataUrl = menuRaw.referenceImage1DataUrl || menuRaw.referenceImageDataUrl
+          menuRaw.referenceImage1Name = menuRaw.referenceImage1Name || menuRaw.referenceImageName || ""
+        }
+        if (typeof menuRaw.referenceImageName === "string" || typeof menuRaw.referenceImageDataUrl === "string") {
+          delete menuRaw.referenceImageName
+          delete menuRaw.referenceImageDataUrl
+        }
+        // Backward-compat: older saves stored menu.itemQuantities as pieces. New UX uses units where 1 unit = 30 pcs.
+        // Heuristic: if values look like pieces (e.g., 30/60/90), convert to units.
+        if (menuRaw?.itemQuantities && typeof menuRaw.itemQuantities === "object") {
+          const next: Record<string, number> = {}
+          for (const [k, v] of Object.entries(menuRaw.itemQuantities as Record<string, unknown>)) {
+            const n = typeof v === "number" ? v : parseInt(String(v ?? "0"), 10)
+            if (!Number.isFinite(n) || n <= 0) continue
+
+            let units: number
+            if (n <= 10) {
+              units = Math.floor(n)
+            } else if (n % MENU_ITEM_PIECES_PER_UNIT === 0) {
+              units = Math.floor(n / MENU_ITEM_PIECES_PER_UNIT)
+            } else {
+              units = Math.max(1, Math.round(n / MENU_ITEM_PIECES_PER_UNIT))
+            }
+
+            if (units > 0) next[k] = units
+          }
+          menuRaw.itemQuantities = next
+        }
         setRequest({
-          event: { ...emptyRequest.event, ...(parsed.event ?? {}) },
+          event: (() => {
+            const raw = { ...emptyRequest.event, ...(parsed.event ?? {}) } as any
+            const old = String(raw.eventType ?? "")
+            if (old && !["internal-corporate", "client-facing-corporate", "vip-pr", "private", "others"].includes(old)) {
+              if (old === "Private Event") raw.eventType = "private"
+              else if (old === "Corporate") raw.eventType = "client-facing-corporate"
+              else if (old === "Others") raw.eventType = "others"
+              else {
+                raw.eventType = "others"
+                raw.otherEventType = raw.otherEventType || old
+              }
+            }
+            return raw
+          })(),
           branding: brandingRaw,
-          menu: { ...emptyRequest.menu, ...(parsed.menu ?? {}) },
+          menu: menuRaw,
           customer: { ...emptyRequest.customer, ...(parsed.customer ?? {}) },
         })
       } catch {
@@ -149,6 +211,7 @@ export default function QuoteRequestPage() {
             setBranding={setBranding}
             menu={request.menu}
             setMenu={setMenu}
+            estimatedGuests={request.event.estimatedGuests}
           />
 
           <HowItWorks />
@@ -158,6 +221,8 @@ export default function QuoteRequestPage() {
             setCustomerData={setCustomerData}
             onSubmit={submit}
             isSubmitted={isSubmitted}
+            submitDisabled={Boolean(submitDisabledReason)}
+            submitDisabledReason={submitDisabledReason}
           />
         </div>
       </main>
